@@ -17,4 +17,6 @@ public interface ReplyMapper {
 	public int countBno(int bno);
 
 	public int update(ReplyVO vo);
+
+	public int delete(int rno);
 }
