@@ -10,7 +10,7 @@ create table spring_board(
 alter table spring_board add constraint pk_spring_board primary key(bno);
 
 create sequence seq_board;
-select * from spring_board;
+select * from spring_board order by bno desc;
 
 --page 나누기 : rownum
 select rownum,bno,title from spring_board where rownum<=10;
@@ -100,4 +100,11 @@ create index idx_reply on spring_reply(bno desc,rno asc);
 
 
 select * from spring_reply;
+
+--댓글 개수를 저장할 컬럼 생성(spring_board)
+alter table spring_board add(replycnt number default 0);
+
+--이미 들어간 댓글 갯수 삽입
+update spring_board
+set replycnt = (select count(rno) from spring_reply where spring_board.bno=spring_reply.bno);
 

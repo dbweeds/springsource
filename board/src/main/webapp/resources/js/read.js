@@ -3,7 +3,8 @@
  */
 $(function(){
 	//댓글 리스트 함수호출
-	showList(1);
+	var pageNum = 1;
+	showList(pageNum);
 
 	
 	var form = $("#myform");
@@ -47,7 +48,7 @@ $(function(){
 				//2. 모달창 닫기
 				modal.modal("hide");
 				//3. 리스트 보여주기
-				showList(1);
+				showList(-1);
 			}
 		});		
 		
@@ -57,11 +58,23 @@ $(function(){
 	function showList(page){
 		replyService.getList({bno:bnoVal,page:page},function(total,data){
 			console.log(data);
+			//새글 작성시 http://localhost:8080/replies/pages/-1
+			if(page == -1){//마지막 페이지를 알아내기 위한 작업
+				pageNum=Math.ceil(total/10.0);
+				showList(pageNum);
+				return;
+			}
+			
+			
+			
 			//보여줄 댓글이 없다면
 			if(data==null || data.length==0){
 				replyUl.html("");
 				return			
 			}
+			
+			
+			
 			//댓글이 존재 한다면
 			let str="";
 			for(var i =0,len=data.length||0;i<len;i++){
@@ -77,7 +90,6 @@ $(function(){
 		});//getlist end*/
 	}
 	//댓글 페이지 영역
-	var pageNum = 1;
 	function showReplyPage(total){
 		console.log("total: "+total);
 		
@@ -108,13 +120,19 @@ $(function(){
 		}
 		if(next){
 			str+="<li class='page-item'><a class='page-link' href='"+(endPage-1)+"'>";
-			str+="Previous</a></li>";
+			str+="next</a></li>";
 		}
 		str+="</ul>";
 		replyPageFooter.html(str);
 	
 	}
-	
+	//댓글 페이지 나누기 번호 클릭시 동작
+	replyPageFooter.on("click","li a",function(e){
+		e.preventDefault();
+		
+		pageNum=$(this).attr("href");
+		showList(pageNum);
+	})
 	
 	
 	
@@ -126,7 +144,7 @@ $(function(){
 				//alert("result : "+result);
 				
 				modal.modal("hide");
-				showList(1);			
+				showList(pageNum);			
 			}})//remove end
 	})
 	//댓글 수정하기
@@ -137,7 +155,7 @@ $(function(){
 			if(result){
 				//alert("result : "+result);
 				modal.modal("hide");
-				showList(1);			
+				showList(pageNum);			
 			}})//update end
 	})
 	//댓글 하나 가져오기
