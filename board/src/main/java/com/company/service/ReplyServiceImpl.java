@@ -1,11 +1,10 @@
 package com.company.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.company.domain.Criteria;
+import com.company.domain.ReplyPageVO;
 import com.company.domain.ReplyVO;
 import com.company.mapper.ReplyMapper;
 
@@ -25,14 +24,19 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 
 	@Override
-	public List<ReplyVO> getList(Criteria cri, int bno) {
+	public ReplyPageVO getList(Criteria cri, int bno) {
 
-		return replyMapper.list(cri, bno);
+		return new ReplyPageVO(replyMapper.countBno(bno), replyMapper.list(cri, bno));
 	}
 
 	@Override
 	public boolean update(ReplyVO vo) {
 		return replyMapper.update(vo) > 0 ? true : false;
+	}
+
+	@Override
+	public boolean delete(int rno) {
+		return replyMapper.delete(rno) > 0 ? true : false;
 	}
 
 }
