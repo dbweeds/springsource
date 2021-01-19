@@ -35,7 +35,7 @@
 					                  <%--전체 도서 목록이 보여지는 곳 --%>
 						                <tr>
 						                  	<td>${vo.bno}</td>
-						                 	<td><a href="${vo.bno}" class="move">${vo.title}</a></td>
+						                 	<td><a href="${vo.bno}" class="move">${vo.title}</a><strong>[${vo.replycnt}]</strong></td>
 						                  	<td>${vo.writer}</td>
 						                  	<td><fmt:formatDate value="${vo.regdate}" pattern="yyyy-MM-dd HH:mm"/></td>
 						                  	<td><fmt:formatDate value="${vo.updatedate}" pattern="yyyy-MM-dd HH:mm"/></td>

@@ -14,7 +14,7 @@
 			from (select /*+INDEX(spring_reply idx_reply)*/ rownum rn,rno,bno,reply,replyer,
 				  replyDate,updateDate from spring_reply where bno=#{bno} and rno>0 and
 				  rownum <= #{cri.pageNum}*#{cri.amount})
-			where rn > (#{cri.pageNum})-1*#{cri.amount}
+			where rn > (#{cri.pageNum}-1)*#{cri.amount}
 		]]>
 	</select>
 	<select id="countBno" resultType="int">
