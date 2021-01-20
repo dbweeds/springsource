@@ -30,7 +30,7 @@ public class UploadController {
 	public void uploadPost(MultipartFile[] uploadFile, String name) {
 		log.info("업로드 요청");
 
-		String uploadPath = "f:\\upload";
+		String uploadPath = "C:\\Users\\user\\Desktop\\code\\upload";
 
 		for (MultipartFile f : uploadFile) {
 			log.info("---------------------------");
@@ -55,7 +55,7 @@ public class UploadController {
 	public ResponseEntity<Resource> download(String fileName) {
 		log.info("다운로드 요청 : " + fileName);
 
-		Resource resource = new FileSystemResource("f:\\upload\\" + fileName);
+		Resource resource = new FileSystemResource("C:\\Users\\user\\Desktop\\code\\upload" + fileName);
 		String resourceName = resource.getFilename();
 
 		HttpHeaders headers = new HttpHeaders();

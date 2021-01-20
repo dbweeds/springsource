@@ -96,7 +96,7 @@ create table spring_reply(
 create sequence seq_reply;
 
 --인덱스 생성
-create index idx_reply on spring_reply(bno desc,rno asc);
+create index idx_reply on spring_reply(bno desc,rno desc);
 
 
 select * from spring_reply;

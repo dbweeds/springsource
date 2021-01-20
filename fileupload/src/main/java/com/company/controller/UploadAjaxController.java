@@ -1,7 +1,10 @@
 package com.company.controller;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,10 +13,12 @@ import java.util.UUID;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.company.domain.FileAttach;
 
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnailator;
 
 @Controller
 @Slf4j
@@ -34,7 +40,7 @@ public class UploadAjaxController {
 	public ResponseEntity<List<FileAttach>> uploadPost(MultipartFile[] uploadFile) {
 		log.info("업로드 요청");
 
-		String uploadFolder = "f:\\upload";
+		String uploadFolder = "C:\\Users\\user\\Desktop\\code\\upload";
 		String uploadFileName = null;
 
 		// 폴더 생성
@@ -65,12 +71,18 @@ public class UploadAjaxController {
 			File saveFile = new File(uploadPath, uploadFileName);
 
 			try {
-				// 서버에 저장
-				f.transferTo(saveFile);
 				// 이미지인지 일반 파일인지 확인
 				if (checkImageType(saveFile)) {
 					attach.setImage(true);
+					// 이미지라면 썸네일로 한번 더 저장
+					FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
+					InputStream in = f.getInputStream();
+					Thumbnailator.createThumbnail(in, thumbnail, 100, 100);
+					in.close();
+					thumbnail.close();
 				}
+				// 서버에 저장
+				f.transferTo(saveFile);
 				attachList.add(attach);
 			} catch (IllegalStateException | IOException e) {
 				e.printStackTrace();
@@ -78,6 +90,24 @@ public class UploadAjaxController {
 
 		}
 		return new ResponseEntity<List<FileAttach>>(attachList, HttpStatus.OK);
+	}
+
+	@GetMapping("/display")
+	public ResponseEntity<byte[]> getFile(String fileName) {
+		log.info("썸내일요청" + fileName);
+		File f = new File("C:\\Users\\user\\Desktop\\code\\upload\\" + fileName);
+
+		ResponseEntity<byte[]> entity = null;
+
+		HttpHeaders headers = new HttpHeaders();
+
+		try {
+			headers.add("Content-Type", Files.probeContentType(f.toPath()));// image/jpg
+			entity = new ResponseEntity<byte[]>(FileCopyUtils.copyToByteArray(f), headers, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return entity;
 	}
 
 	// 서버에 저장한 파일이 이미지인지 일반 파일인지 확인
