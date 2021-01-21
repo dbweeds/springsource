@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 
 import com.company.domain.BoardVO;
 import com.company.domain.Criteria;
+import com.company.mapper.AttachMapper;
 import com.company.mapper.BoardMapper;
 
 @Service
 public class BoardServiceImpl implements BoardService {
 	@Autowired
-	BoardMapper mapper;
+	private BoardMapper mapper;
+	@Autowired
+	private AttachMapper attachMapper;
 
 	@Override
 	public boolean regist(BoardVO vo) {

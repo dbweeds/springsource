@@ -77,7 +77,7 @@ public class UploadAjaxController {
 			try {
 				// 이미지인지 일반 파일인지 확인
 				if (checkImageType(saveFile)) {
-					attach.setImage(true);
+					attach.setFileType(true);
 					// 이미지라면 썸네일로 한번 더 저장
 					FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
 					InputStream in = f.getInputStream();

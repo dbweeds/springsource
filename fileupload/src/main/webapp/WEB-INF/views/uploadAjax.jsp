@@ -15,6 +15,9 @@
 	<div class="uploadResult">
 		<ul></ul>
 	</div>
+	<div class="bigPictureWrapper">
+		<div class="bigPicture"></div>
+	</div>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 	<script>
 		$(function() {
@@ -63,16 +66,66 @@
 				$(uploadResultArr).each(function(idx, obj) {
 					//var i = 0
 					if (obj.image) {
+						//썸네일 이미지 경로
 						var fileCallPath = encodeURIComponent(obj.uploadPath+"\\s_"+obj.uuid+"_"+obj.fileName);
-						str += "<li><img src='/display?fileName="+fileCallPath+"'>"+ obj.fileName + "</li>";
+						//원본 이미지 경로
+						var originPath = obj.uploadPath+"\\"+obj.uuid+"_"+obj.fileName;
+						
+						originPath = originPath.replace(new RegExp(/\\/g),"/");
+						
+						str += "<li>";
+						str += "<a href=\"javascript:showImage(\'"+originPath+"\')\">";
+						str += "<img src='/display?fileName="+fileCallPath+"'>"+ obj.fileName +"</a>"
+						str += "<span data-file='"+fileCallPath+"' data-type='image'> X </span>";
+						str += "</li>";
 					} else {
-						str += "<li><img src='/resources/img/attach.png'>"
-							+ obj.fileName + "</li>";
+						var fileCallPath = encodeURIComponent(obj.uploadPath+"\\"+obj.uuid+"_"+obj.fileName);
+						str += "<li><a href='/download?fileName="+fileCallPath+"'>";
+						str += "<img src='/resources/img/attach.png'>"+ obj.fileName + "</a>";
+						str += "<span data-file='"+fileCallPath+"' data-type='file'> X </span>";
+						str += "</li>";
 					}
 								});
 				uploadResult.append(str);
 			}
+			//크게 열린 이미지 다시 닫기
+			$(".bigPictureWrapper").click(function() {
+			$(".bigPicture").animate({width:'0%', height:'0%'},1000);
+			setTimeout(function() {
+				$(".bigPictureWrapper").hide();
+			}, 1000)
+				
+			})
+			
+			//x버튼 클릭 - 이벤트 위임
+			$(".uploadResult").on("click","span",function(){
+				var targetFile=$(this).data("file");
+				//파일타입 가져오기
+				var type=$(this).data("type");
+				//span태그가 속한 부모li태그 가져오기
+				var targetLi = $(this).closest("li");
+				
+	
+				//서버 폴더에서 제거
+				$.ajax({
+					url: "/deleteFile",
+					type: "post",
+					data: {
+						fileName:targetFile,
+						type:type
+					},
+					success: function(result){
+						console.log(result);
+						//화면 목록에서 제거
+						targetLi.remove();
+					}
+				})
+			})
 		})
+		function showImage(fileCallPath) {
+			$(".bigPictureWrapper").css("display","flex").show();
+			$(".bigPicture").html("<img src='/display?fileName="+fileCallPath+"'>").animate({width:'100%', height:'100%'},1000);
+		}
 	</script>
 </body>
 </html>
