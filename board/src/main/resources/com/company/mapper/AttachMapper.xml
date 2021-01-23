@@ -5,4 +5,7 @@
 		insert into spring_attach(uuid,uploadPath,fileName,fileType,bno)
 		values(#{uuid},#{uploadPath},#{fileName},#{fileType},#{bno})
 	</insert>
+	<delete id="remove">
+		delete from spring_attach where bno=#{bno}
+	</delete>
 </mapper>

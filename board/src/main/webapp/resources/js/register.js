@@ -12,13 +12,19 @@ $(function() {
 		$(".uploadResult ul li").each(function(idx,obj){
 			var job = $(obj);
 		//수집된 정보를 hidden태그로 작성
-			str+= "<input type='hidden' neme='attachList["+idx+"].uuid' value='"+job.data("uuid")+"'>"			
-			str+= "<input type='hidden' neme='attachList["+idx+"].uploadPath' value='"+job.data("path")+"'>"			
-			str+= "<input type='hidden' neme='attachList["+idx+"].fileName' value='"+job.data("filename")+"'>"			
-			str+= "<input type='hidden' neme='attachList["+idx+"].fileType' value='"+job.data("type")+"'>"			
+			str+= "<input type='hidden' name='attachList["+idx+"].uuid' value='"+job.data("uuid")+"'>"			
+			str+= "<input type='hidden' name='attachList["+idx+"].uploadPath' value='"+job.data("path")+"'>"			
+			str+= "<input type='hidden' name='attachList["+idx+"].fileName' value='"+job.data("filename")+"'>"			
+			str+= "<input type='hidden' name='attachList["+idx+"].fileType' value='"+job.data("type")+"'>"			
 		})
 		console.log(str);
 		//hidden 태그를 게시글 등록 폼에 추가한 후 폼 전송하기
+		//1 게시글 폼 가져오기
+		var form = $("form");
+		//2 폼에 추가하기
+		form.append(str);
+		//3 폼 보내기
+		form.submit();
 	})
 	
 	
@@ -51,6 +57,7 @@ $(function() {
 			success: function(result) {
 				console.log(result);
 				showUploadedFile(result);
+				$("input[name='uploadFile']").val("");
 			},
 			error: function(xhr, statues, error) {
 				console.log(status);
@@ -117,10 +124,10 @@ $(function() {
 			})//x버튼 클릭 이벤트종료
 			//크게 열린 이미지 다시 닫기
 			$(".bigPictureWrapper").click(function() {
-			$(".bigPicture").animate({width:'0%', height:'0%'},1000);
-			setTimeout(function() {
-				$(".bigPictureWrapper").hide();
-			}, 1000)
+				$(".bigPicture").animate({width:'0%', height:'0%'},1000);
+				setTimeout(function() {
+					$(".bigPictureWrapper").hide();
+				}, 1000)
 				
 			})
 })

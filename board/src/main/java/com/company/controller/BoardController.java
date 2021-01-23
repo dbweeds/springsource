@@ -3,6 +3,9 @@ package com.company.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.company.domain.BoardVO;
 import com.company.domain.Criteria;
+import com.company.domain.FileAttach;
 import com.company.domain.PageVO;
 import com.company.service.BoardService;
 
@@ -31,11 +35,17 @@ public class BoardController {
 
 	@PostMapping("/register")
 	public String registerPost(BoardVO vo, RedirectAttributes rttr) {
-		log.info("register post시작");
-		service.regist(vo);
-		log.info("msg" + vo.getBno());
-		rttr.addFlashAttribute("result", vo.getBno());
-		return "redirect:/board/list";
+		log.info("register post시작" + vo);
+		// 파일첨부 확인
+//		if (vo.getAttachList() != null) {
+//			vo.getAttachList().forEach(attach -> log.info("" + attach));
+//		}
+
+		if (service.regist(vo)) {
+			rttr.addFlashAttribute("result", vo.getBno());
+			return "redirect:/board/list";
+		}
+		return "redirect:register";
 	}
 
 	@GetMapping("/list")
@@ -79,6 +89,15 @@ public class BoardController {
 		rttr.addAttribute("keyword", cri.getKeyword());
 		return "redirect:list";
 
+	}
+
+	// 첨부물 가져오기
+	@GetMapping(value = "/getAttachList", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<List<FileAttach>> getAttachList(int bno) {
+		log.info("첨부물 가져오기 : " + bno);
+		List<FileAttach> list = service.getAttachList(bno);
+		log.info("첨부물" + list);
+		return new ResponseEntity<List<FileAttach>>(list, HttpStatus.OK);
 	}
 
 }

@@ -31,7 +31,7 @@
                 					<input class="form-control" name="writer">                				
                 				</div>  
                 				<button type="submit" class="btn btn-default">Submit</button>              			
-                				<button type="button" class="btn btn-default" onclick="location.href='register'">List</button>              			
+                				<button type="button" class="btn btn-default" onclick="location.href='list'">List</button>              			
                 			</form>
                 		</div>
                 	</div>

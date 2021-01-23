@@ -6,9 +6,12 @@ import org.apache.ibatis.annotations.Param;
 
 import com.company.domain.BoardVO;
 import com.company.domain.Criteria;
+import com.company.domain.FileAttach;
 
 public interface BoardMapper {
 	public int regist(BoardVO vo);
+
+	public List<FileAttach> attachList(int bno);
 
 	public int modify(BoardVO vo);
 
