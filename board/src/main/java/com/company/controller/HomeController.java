@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -16,4 +17,8 @@ public class HomeController {
 		return "index";
 	}
 
+	@GetMapping("/except")
+	public void exceptTest(int no) {
+		log.info("예외 테스트");
+	}
 }

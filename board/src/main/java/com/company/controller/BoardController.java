@@ -1,5 +1,8 @@
 package com.company.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,8 +71,19 @@ public class BoardController {
 
 	@PostMapping("/remove")
 	public String remove(int bno, Criteria cri, RedirectAttributes rttr) {
-		service.remove(bno);
-		rttr.addFlashAttribute("result", "success");
+		// 게시물 번호에 해당ㅇ하는 첨부 파일 삭제(서버,데이터베이스도 삭제)
+
+		// 서버 폴더 안 파일 삭제하기
+		// 1.bno해당하는 첨부물 목록 알아내기
+		List<FileAttach> attachList = service.getAttachList(bno);
+		// 성공하면 리스트 보여주기
+		if (service.remove(bno)) {// 2.데이터베이스 삭제(게시물,첨부물)
+			// 3. 파일삭제
+			deleteFiles(attachList);
+
+			rttr.addFlashAttribute("result", "success");
+		}
+
 		rttr.addAttribute("pageNum", cri.getPageNum());
 		rttr.addAttribute("amount", cri.getAmount());
 		rttr.addAttribute("type", cri.getType());
@@ -77,10 +91,41 @@ public class BoardController {
 		return "redirect:list";
 	}
 
+	private void deleteFiles(List<FileAttach> attachList) {
+		log.info("첨부물삭제" + attachList);
+
+		if (attachList == null || attachList.size() <= 0) {
+			return;
+		}
+		for (FileAttach atta : attachList) {
+			Path path = Paths.get("F:\\upload\\",
+					atta.getUploadPath() + "\\" + atta.getUuid() + "_" + atta.getFileName());
+
+			// 일반파이르 이미지 원본 파일 삭제
+			try {
+				Files.deleteIfExists(path);
+
+				if (Files.probeContentType(path).startsWith("image")) {
+					Path thumb = Paths.get("F:\\upload\\",
+							atta.getUploadPath() + "\\s_" + atta.getUuid() + "_" + atta.getFileName());
+					Files.delete(thumb);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
 	@PostMapping("/modify")
 	public String modify(BoardVO vo, Criteria cri, RedirectAttributes rttr) {
 		log.info(vo.toString());
 		log.info("criteria - " + cri);
+		// 파일첨부 확인
+		if (vo.getAttachList() != null) {
+			vo.getAttachList().forEach(attach -> log.info("" + attach));
+		}
 		service.modify(vo);
 		rttr.addFlashAttribute("result", "success");
 		rttr.addAttribute("pageNum", cri.getPageNum());

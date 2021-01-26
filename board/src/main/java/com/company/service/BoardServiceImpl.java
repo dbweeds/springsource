@@ -27,16 +27,18 @@ public class BoardServiceImpl implements BoardService {
 		return result;
 	}
 
+	@Transactional
 	@Override
 	public boolean remove(int bno) {
 		attachMapper.remove(bno);
 		return mapper.remove(bno) > 0 ? true : false;
 	}
 
+	@Transactional
 	@Override
 	public boolean modify(BoardVO vo) {
-		boolean result = mapper.modify(vo) > 0 ? true : false;
 		attachMapper.remove(vo.getBno());
+		boolean result = mapper.modify(vo) > 0 ? true : false;
 		addAttachMapper(vo);
 		return result;
 	}

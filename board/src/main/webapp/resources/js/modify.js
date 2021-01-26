@@ -141,20 +141,8 @@ $(document).ready(function(){
 		});
 		uploadResult.append(str);
 	}//첨부파일보여주기종료
-		//x버튼 클릭 - 이벤트 위임
-			$(".uploadResult").on("click","button",function(e){
-				e.stopPropagation();
-				if(confirm("정말 파일을 삭제하시겠습니까?")){
-					//span태그가 속한 부모li태그 가져오기
-					var targetLi = $(this).closest("li");
-					//화면 목록에서 제거
-					targetLi.remove();
-						
-				}
-			
-			})//x버튼 클릭 이벤트종료
 		//이미지 클릭시 원본 이미지 보여주기, 일반파일은 다운로드
-		$(uploadResult).on("click","li",function(){
+		$(".uploadResult").on("click","li",function(){
 			var liObj = $(this);
 			
 			var path = encodeURIComponent(liObj.data("path") + "\\" + liObj.data("uuid") + "_" + liObj.data("filename"));
@@ -167,6 +155,20 @@ $(document).ready(function(){
 			
 		})		
 	
+		//x버튼 클릭 - 이벤트 위임
+			$(".uploadResult").on("click","button",function(e){
+				//이벤트 전파 막기
+				e.stopPropagation();
+				
+				if(confirm("정말 파일을 삭제하시겠습니까?")){
+					//span태그가 속한 부모li태그 가져오기
+					var targetLi = $(this).closest("li");
+					//화면 목록에서 제거
+					targetLi.remove();
+						
+				}
+			
+			})//x버튼 클릭 이벤트종료
 		//크게 열린 이미지 다시 닫기
 		$(".bigPictureWrapper").click(function() {
 		$(".bigPicture").animate({width:'0%', height:'0%'},1000);
