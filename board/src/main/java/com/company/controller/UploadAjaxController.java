@@ -46,7 +46,7 @@ public class UploadAjaxController {
 
 		// "C:\\Users\\user\\Desktop\\code\\upload\\"
 		// "F:\\upload\\"
-		String uploadFolder = "F:\\upload";
+		String uploadFolder = "C:\\Users\\user\\Desktop\\code\\upload";
 		String uploadFileName = null;
 
 		// 폴더 생성
@@ -101,7 +101,7 @@ public class UploadAjaxController {
 	@GetMapping("/display")
 	public ResponseEntity<byte[]> getFile(String fileName) {
 		log.info("썸내일요청" + fileName);
-		File f = new File("F:\\upload\\" + fileName);
+		File f = new File("C:\\Users\\user\\Desktop\\code\\upload\\" + fileName);
 
 		ResponseEntity<byte[]> entity = null;
 
@@ -120,7 +120,7 @@ public class UploadAjaxController {
 	public ResponseEntity<Resource> download(String fileName) {
 		log.info("다운로드 요청 : " + fileName);
 
-		Resource resource = new FileSystemResource("F:\\upload\\" + fileName);
+		Resource resource = new FileSystemResource("C:\\Users\\user\\Desktop\\code\\upload\\" + fileName);
 
 		// uuid값 제거 후 파일 다운로드 하기
 		String resourceName = resource.getFilename().substring(resource.getFilename().indexOf("_") + 1);
@@ -142,7 +142,7 @@ public class UploadAjaxController {
 	@PostMapping("/deleteFile")
 	public ResponseEntity<String> deleteFile(String fileName, String type) {
 		try {
-			File file = new File("F:\\upload\\" + URLDecoder.decode(fileName, "utf-8"));
+			File file = new File("C:\\Users\\user\\Desktop\\code\\upload\\" + URLDecoder.decode(fileName, "utf-8"));
 
 			// 파일(썸네이ㄹ,일반파일)삭제
 			file.delete();
