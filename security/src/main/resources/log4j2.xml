@@ -17,6 +17,7 @@
 	  </Logger>
 	  <Logger name="com.company.service" level="debug"/>
 	  <Logger name="com.company.mapper" level="debug"/>
+	  <Logger name="com.company.handler" level="debug"/>
 	  <!-- 스프링 프레임워크 로깅 처리 -->
 	 <Logger name="org.springframework.core" level="info"/>
 	 <Logger name="org.springframework.beans" level="info"/>

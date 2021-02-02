@@ -1,14 +1,31 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
+
 <html>
 <head>
-	<title>Home</title>
+   <title>Home</title>
 </head>
 <body>
 <h1>
-	Hello world!  
+   Hello world!  
 </h1>
+<%--로그인 정보가 있다면 로그아웃 버튼/ 없는 경ㅇ우 로그인 버틀을 보이게 하기 
+	isAnonymous() : 익명 상태라면 true
+	isRememberMe() : 현재 사용자가 remember me 사용자라면 true
+	isAuthenticated() : 현재 사용자가 로그인상태라면 true
+	isFullyAuthenticated() : 현재 사용자가 익명이가너 Remember Me 사용자가 아니라면 true
+--%>
+<sec:authorize access="isAnonymous()">
+	<button onclick="location.href='/security/login'">로그인</button>
+</sec:authorize>
+<sec:authorize access="isAuthenticated()">
+	<form action="/logout" method="post">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		<button>로그아웃</button>
+	</form>
 
-<P>  The time on the server is ${serverTime}. </P>
+</sec:authorize>
+
 </body>
 </html>

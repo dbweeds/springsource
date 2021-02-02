@@ -122,3 +122,9 @@ alter table spring_attach add constraint fk_board_attach foreign key(bno) refere
 select * from spring_attach;
 drop table spring_attach;
 
+select * from spring_member;
+select * from spring_member_auth;
+delete from spring_member_auth;
+
+select * from spring_member where userid='admin90';
+select * from spring_member_auth where userid='admin90';

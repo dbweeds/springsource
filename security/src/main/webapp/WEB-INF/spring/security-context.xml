@@ -6,9 +6,14 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
+	<!-- 데이터베이스 정보를 담을 객체 -->
+	<bean id="userDetail" class="com.company.service.CustomUserDetailService"/>
+
+	<!-- 페스워드 인코더 -->
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
 	<!-- 로그인 성공시 동작하는 핸들러 객체 생성 -->
 	<bean id="customLoginHandler" class="com.company.handler.CustomLoginSuccessHandler"/>
-
 
 	<!-- http로 들어오는 요청에 대해 접근통제를 위한 필터 기록 -->
 	<security:http>
@@ -26,7 +31,10 @@
 		<security:form-login login-page="/security/login" authentication-success-handler-ref="customLoginHandler"/>
 		<!-- 시큐리티가 제공하는 기본 로그아웃 :성공하면 로그인 페이지로 이동되고 logout 파라메터 따라감 -->
 	<!-- 	<security:logout/> -->
-	<security:logout invalidate-session="true" logout-success-url="/"/>
+	<security:logout invalidate-session="true" logout-success-url="/" delete-cookies="remember-me,JSESSION_ID"/>
+	
+	<!-- remember me -->
+	<security:remember-me data-source-ref="ds" token-validity-seconds="604800"/>
 	</security:http>
 	
 
@@ -34,11 +42,18 @@
 	
 	<!-- 인증을 어떤 방식으로 할 것인지 기록 -->
 	<security:authentication-manager>
-		<security:authentication-provider>
-			<security:user-service><!-- user인증을 in-memory방식으로 진행 -->
+		<security:authentication-provider user-service-ref="userDetail">
+			<!-- user인증을 in-memory방식으로 진행(연습용)
+			<security:user-service>
 				<security:user name="member" password="{noop}member" authorities="ROLE_MEMBER"/>
 				<security:user name="admin" password="{noop}admin" authorities="ROLE_MEMBER,ROLE_ADMIN"/>
-			</security:user-service>
+			</security:user-service> -->
+			<!-- 2 user인증을 jdbc 인증 방식으로 진행 -->
+			<!-- <security:jdbc-user-service data-source-ref="ds" 
+			users-by-username-query="select userid,userpw,enabled from spring_member where userid=?"
+			authorities-by-username-query="select * from spring_member_auth where userid=?"/> -->
+			
+			<security:password-encoder ref="bcryptPasswordEncoder"/>
 		</security:authentication-provider>
 	</security:authentication-manager>
 
