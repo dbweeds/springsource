@@ -36,7 +36,7 @@ $(function() {
 	//현재 목록의 파일을 서버로 보내서 저장하기
 	$("input[type='file']").change(function() {
 		console.log("업로드 호출");
-
+		
 		var inputFile = $("input[name='uploadFile']");
 		console.log(inputFile);
 		//첨부 파일 목록
@@ -54,6 +54,9 @@ $(function() {
 			processData: false,//데이터를 query string 형태로 보낼것인지 결정(기본값은 application/x-www-form-urlencoded임)
 			contentType: false,//기본값은 application/x-www-form-urlencoded임(파일첨부임으로 multipart/form-data로 보내야 함)
 			data: formData,
+			beforeSend:function(xhr){
+				xhr.setRequestHeader(csrfHeaderName,csrfTocenValue);
+			},
 			success: function(result) {
 				console.log(result);
 				showUploadedFile(result);

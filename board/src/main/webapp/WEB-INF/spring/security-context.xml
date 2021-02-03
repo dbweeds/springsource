@@ -6,32 +6,36 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
+	<!-- 데이터베이스 정보를 담을 객체 -->
+	<bean id="userDetail" class="com.company.service.CustomUserDetailService"/>
+
 	<!-- 페스워드 인코더 -->
 	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 
-
-
 	<!-- 로그인 성공시 동작하는 핸들러 객체 생성 -->
-	<!-- <bean id="customLoginHandler" class="com.company.handler.CustomLoginSuccessHandler"/> -->
+	<bean id="customLoginHandler" class="com.company.handler.CustomLoginSuccessHandler"/>
+	
+	<!-- list는 시큐리티를 적용하지 않음 -->
+	<!-- <security:http pattern="/board/list" security="none"/>
+	<security:http pattern="/board/read" security="none"/> -->
 
-
-	<!-- http로 들어오는 요청에 대해 접근통제를 위한 필터 기록 -->
+<!-- http로 들어오는 요청에 대해 접근통제를 위한 필터 기록 -->
 	<security:http>
-		<security:intercept-url pattern="/security/all" access="permitAll"/>
-		<security:intercept-url pattern="/security/member" access="hasRole('ROLE_MEMBER')"/>
-		<security:intercept-url pattern="/security/admin" access="hasRole('ROLE_ADMIN')"/>
-		
+		<!-- <security:intercept-url pattern="/board/*" 
+								access="hasAnyRole('ROLE_MEMBER','ROLE_MANAGER,ROLE_ADMIN')"/> -->
 		<!-- 권한이 없는 사용자가 접근이 제한된 URI에 접근하는 경우 동작 
 			default 상태 : 403 페이지를 보여줌, 관리자가 원하는 페이지로 이동하기
 		-->
 		<security:access-denied-handler error-page="/accessError"/>
-		<security:form-login/>
+		
 		
 		<!-- 사용자가 원하는 로그인 폼을 띄우기 위해 login-page 옵션 사용 -->
-		<!-- <security:form-login login-page="/security/login" authentication-success-handler-ref="customLoginHandler"/> -->
+		<security:form-login login-page="/member/login" authentication-success-handler-ref="customLoginHandler"/>
 		<!-- 시큐리티가 제공하는 기본 로그아웃 :성공하면 로그인 페이지로 이동되고 logout 파라메터 따라감 -->
-	<security:logout/> 
-	<security:logout invalidate-session="true" logout-success-url="/" delete-cookies="remember-me,JSESSION_ID"/>
+	<security:logout logout-url="/member/logout" invalidate-session="true" logout-success-url="/" delete-cookies="remember-me,JSESSION_ID"/>
+	
+	<!-- remember me -->
+	<security:remember-me data-source-ref="ds" token-validity-seconds="604800"/>
 	</security:http>
 	
 
@@ -39,11 +43,8 @@
 	
 	<!-- 인증을 어떤 방식으로 할 것인지 기록 -->
 	<security:authentication-manager>
-		<security:authentication-provider>
-			<security:user-service><!-- user인증을 in-memory방식으로 진행 -->
-				<security:user name="member" password="{noop}member" authorities="ROLE_MEMBER"/>
-				<security:user name="admin" password="{noop}admin" authorities="ROLE_MEMBER,ROLE_ADMIN"/>
-			</security:user-service>
+		<security:authentication-provider user-service-ref="userDetail">
+			<security:password-encoder ref="bcryptPasswordEncoder"/>
 		</security:authentication-provider>
 	</security:authentication-manager>
 

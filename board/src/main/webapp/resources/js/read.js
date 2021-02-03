@@ -6,8 +6,10 @@ $(function(){
 	var pageNum = 1;
 	showList(pageNum);
 
-	
 	var form = $("#myform");
+	
+	
+	
 	$(".btn-default").click(function() {
 		form.submit();
 	})
@@ -22,8 +24,11 @@ $(function(){
 	$("#addReplyBtn").click(function(){
 		//기본디자인에서 댓글 입력을 위한 화면 변경
 		modal.find("input").val("");
+		
+		//현재 로그인한 사용자 보여주기
+		modalInputReplyer.val(replyer);
 		//readonly속성 없애기
-		modalInputReplyer.prop("readonly","");
+		modalInputReplyer.prop("readonly","readonly");
 		
 		//작성일자 요소 숨기기
 		modalInputReplyDate.closest("div").hide();
@@ -130,7 +135,23 @@ $(function(){
 	//댓글 삭제
 	
 	$(modalRemoveBtn).click(function(){
-		replyService.remove(modal.data("rno"),function(result){
+		
+		//로그인 여부 확인
+		if(!replyer){
+			alert("로그인이 필요합니다.");
+			modal.modal("hide");
+			return;
+		}
+		//로그인이 되어있다면 로그인한 사용자와 모달창에 있는 사용자가
+		//같은지 확인하기
+		var originalReplyer = modalInputReplyer.val();
+		if(originalReplyer != replyer){
+			alert("자신의 댓글만 삭제가 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		//댓글 작성자도 컨트롤러로 보내기
+		replyService.remove(modal.data("rno"),originalReplyer,function(result){
 			if(result){
 				//alert("result : "+result);
 				
@@ -140,7 +161,23 @@ $(function(){
 	})
 	//댓글 수정하기
 	$(modalModBtn).click(function(){
-		let reply = {rno:modal.data("rno"),reply:modalInputReply.val()};
+		
+		//로그인 여부 확인
+		if(!replyer){
+			alert("로그인이 필요합니다.");
+			modal.modal("hide");
+			return;
+		}
+		//로그인이 되어있다면 로그인한 사용자와 모달창에 있는 사용자가
+		//같은지 확인하기
+		var originalReplyer = modalInputReplyer.val();
+		if(originalReplyer != replyer){
+			alert("자신의 댓글만 수정이 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		
+		let reply = {rno:modal.data("rno"),reply:modalInputReply.val(),replyer:modalInputReplyer.val()};
 		replyService.update(reply,function(result){
 			if(result){
 				//alert("result : "+result);

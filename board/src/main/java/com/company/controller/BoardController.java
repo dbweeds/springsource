@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +30,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping("/board/*")
 public class BoardController {
+
 	@Autowired
 	BoardService service;
 
 	@GetMapping("/register")
+	@PreAuthorize("isAuthenticated()")
 	public void registerGet() {
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/register")
 	public String registerPost(BoardVO vo, RedirectAttributes rttr) {
 		log.info("register post시작" + vo);
@@ -69,8 +73,9 @@ public class BoardController {
 		// model.addAttribute("cri", cri);
 	}
 
+	@PreAuthorize("#writer == principal.username")
 	@PostMapping("/remove")
-	public String remove(int bno, Criteria cri, RedirectAttributes rttr) {
+	public String remove(int bno, String writer, Criteria cri, RedirectAttributes rttr) {
 		// 게시물 번호에 해당ㅇ하는 첨부 파일 삭제(서버,데이터베이스도 삭제)
 
 		// 서버 폴더 안 파일 삭제하기
@@ -119,7 +124,8 @@ public class BoardController {
 	}
 
 	@PostMapping("/modify")
-	public String modify(BoardVO vo, Criteria cri, RedirectAttributes rttr) {
+	@PreAuthorize("#writer == principal.username")
+	public String modify(BoardVO vo, String writer, Criteria cri, RedirectAttributes rttr) {
 		log.info(vo.toString());
 		log.info("criteria - " + cri);
 		// 파일첨부 확인

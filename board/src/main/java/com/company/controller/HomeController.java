@@ -1,5 +1,6 @@
 package com.company.controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,5 +21,12 @@ public class HomeController {
 	@GetMapping("/except")
 	public void exceptTest(int no) {
 		log.info("예외 테스트");
+	}
+
+	@GetMapping("/accessError")
+	public String accessError(Authentication auth) {
+		log.info("접근제한" + auth);
+		log.info("gkdlgkdsfsd알나아여라나아");
+		return "/member/accessError";
 	}
 }

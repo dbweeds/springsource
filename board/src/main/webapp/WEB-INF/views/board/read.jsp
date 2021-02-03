@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
 <link rel="stylesheet" href="/resources/css/mycss.css" />
 
 <%@include file="../includes/header.jsp" %>
@@ -34,8 +35,13 @@
                 				<div class="form-group">
                 					<label>Writer</label>
                 					<input class="form-control" name="writer" readonly="readonly" value="${row.writer}">                				
-                				</div>  
+                				</div>
+                				<sec:authentication property="principal" var="info"/>
+                				<sec:authorize access="isAuthenticated()">
+                				<c:if test="${info.username == row.writer}">  
                 				<button type="button" class="btn btn-default">Modify</button>     			
+                				</c:if>
+                				</sec:authorize>
                 				<button type="reset" class="btn btn-info">List</button>          			
                 			</form>
                 		</div>
@@ -73,7 +79,9 @@
 			<div class="panel-heading">
 				<i class="fa fa-comments fa-fw"></i>
 				Reply
-				<button id='addReplyBtn' class='btn btn-primary btn-xs pull-right'>New Reply</button>
+				<sec:authorize access="isAuthenticated()">
+					<button id='addReplyBtn' class='btn btn-primary btn-xs pull-right'>New Reply</button>
+                </sec:authorize>
 			</div>
 			<div class="panel-body">
 				<ul class="chat">
@@ -147,6 +155,17 @@
 
 	//뎃글 페이지 영역 가져오기
 	var replyPageFooter = $(".panel-footer");
+	
+	//토큰값 생성
+	var csrfHeaderName = "${_csrf.headerName}";
+	var csrfTocenValue = "${_csrf.token}";
+	
+	//댓글 작성자 보여주기 - 회원제사용하기
+	var replyer = null; 
+	<sec:authorize access="isAuthenticated()">
+	replyer = '<sec:authentication property="principal.username"/>'
+	</sec:authorize>
+
 </script>        
 <script src="/resources/js/reply.js"></script> 
 <script src="/resources/js/read.js"></script> 

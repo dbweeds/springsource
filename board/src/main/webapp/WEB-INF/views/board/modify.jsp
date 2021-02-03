@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
 <link rel="stylesheet" href="/resources/css/mycss.css" />
 
 <%@include file="../includes/header.jsp" %>
@@ -35,8 +36,14 @@
                 					<label>Writer</label>
                 					<input class="form-control" name="writer" readonly="readonly" value="${row.writer}">                				
                 				</div>  
+                				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                				<sec:authentication property="principal" var="info"/>
+                				<sec:authorize access="isAuthenticated()">
+                				<c:if test="${info.username == row.writer}"> 
                 				<button type="submit" data-oper='modify' class="btn btn-default">Modify</button>              			
                 				<button type="submit" data-oper='remove' class="btn btn-danger">Remove</button>              			
+                				</c:if>
+                				</sec:authorize>
                 				<button type="submit" data-oper='list' class="btn btn-info">List</button>              			
                 			</form>
                 		</div>
@@ -69,10 +76,16 @@
     		<input type="hidden" name="keyword" value="${cri.keyword}"/>
     		<input type="hidden" name="pageNum" value="${cri.pageNum}"/>
     		<input type="hidden" name="amount" value="${cri.amount}"/>
+    		<!-- 시큐리티 때문에 추가 -->
+    		<input type="hidden" name="writer" value="${row.writer}"/>
+    		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		</form>
 			<%-- 스크립트 --%>
 <script>
 	var bnoVal=${row.bno};
+	//토큰값 생성
+	var csrfHeaderName = "${_csrf.headerName}";
+	var csrfTocenValue = "${_csrf.token}";
 </script>
 <script src="/resources/js/modify.js"></script> 
 <%@include file="../includes/footer.jsp" %>       
